@@ -17,6 +17,13 @@
     "check:spell": "turbo run check:spell",
     "check:all": "pnpm lint && pnpm check:types && pnpm check:spell",
     "clean": "turbo run clean && rm -rf node_modules **/node_modules",
+    "db:start": "pnpm -F @bagyo-rescue/prisma db:start",
+    "db:stop": "pnpm -F @bagyo-rescue/prisma db:stop",
+    "db:pull": "pnpm -F @bagyo-rescue/prisma db:pull",
+    "db:deploy": "pnpm -F @bagyo-rescue/prisma db:deploy",
+    "db:dev": "pnpm -F @bagyo-rescue/prisma db:dev",
+    "db:status": "pnpm -F @bagyo-rescue/prisma db:status",
+    "sync:rules": "pnpm dlx tsx tools/context-factory/scripts/sync-rules.mjs",
     "prepare": "husky"
   },
   "devDependencies": {

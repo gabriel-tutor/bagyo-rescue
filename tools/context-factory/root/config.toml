@@ -1,0 +1,6 @@
+[mcp_servers.postgres]
+command = "npx"
+args = ["-y", "@modelcontextprotocol/server-postgres", "postgresql://bagyo-rescue:password@localhost:5432/bagyo-rescue"]
+
+[mcp_servers.supabase]
+url = "https://mcp.supabase.com/mcp"

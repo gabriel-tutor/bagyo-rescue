@@ -50,6 +50,9 @@ importers:
       workbox-window:
         specifier: ^7.4.0
         version: 7.4.1
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
     devDependencies:
       '@tanstack/router-plugin':
         specifier: ^1.139.12

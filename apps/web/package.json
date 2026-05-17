@@ -16,7 +16,8 @@
     "dexie": "^4.2.1",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "workbox-window": "^7.4.0"
+    "workbox-window": "^7.4.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.139.12",

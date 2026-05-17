@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "db:start": "docker compose -f docker-compose-db.yaml up -d",
+    "db:stop": "docker compose -f docker-compose-db.yaml down",
     "db:pull": "prisma db pull",
-    "migrate:deploy": "prisma migrate deploy",
-    "migrate:dev": "prisma migrate dev",
-    "migrate:status": "prisma migrate status"
+    "db:deploy": "prisma migrate deploy",
+    "db:dev": "prisma migrate dev",
+    "db:status": "prisma migrate status"
   },
   "devDependencies": {
     "dotenv": "^17.4.2",
