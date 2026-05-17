@@ -39,13 +39,18 @@ function DashboardPage() {
           <p className="eyebrow">Offline-ready coordination</p>
           <h1>Track rescue reports even when connectivity drops.</h1>
           <p>
-            Reports are persisted locally in IndexedDB through Dexie and surfaced through TanStack
-            Query, so field teams can keep working between sync windows.
+            Families can view their own roster and nearby evacuation centers, while contact admins
+            manage operational contact records.
           </p>
         </div>
-        <Link to="/reports" className="button">
-          Open reports
-        </Link>
+        <div className="hero-actions">
+          <Link to="/resident" className="button">
+            Resident portal
+          </Link>
+          <Link to="/admin" className="button button--secondary">
+            Contact admin
+          </Link>
+        </div>
       </section>
 
       <section className="metrics" aria-label="Rescue report summary">

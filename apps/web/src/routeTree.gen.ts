@@ -9,12 +9,39 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResidentRouteImport } from './routes/resident'
 import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as RecordsRouteImport } from './routes/records'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecordsIndexRouteImport } from './routes/records/index'
+import { Route as RecordsResidentsRouteImport } from './routes/records/residents'
+import { Route as RecordsLgusRouteImport } from './routes/records/lgus'
+import { Route as RecordsHousesRouteImport } from './routes/records/houses'
+import { Route as RecordsFamiliesRouteImport } from './routes/records/families'
+import { Route as RecordsEvacuationCentersRouteImport } from './routes/records/evacuation-centers'
+import { Route as RecordsEvacuationCenterAssignmentsRouteImport } from './routes/records/evacuation-center-assignments'
+import { Route as RecordsContactPersonsRouteImport } from './routes/records/contact-persons'
+import { Route as RecordsBarangaysRouteImport } from './routes/records/barangays'
 
+const ResidentRoute = ResidentRouteImport.update({
+  id: '/resident',
+  path: '/resident',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportsRoute = ReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordsRoute = RecordsRouteImport.update({
+  id: '/records',
+  path: '/records',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -22,40 +49,188 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecordsIndexRoute = RecordsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RecordsRoute,
+} as any)
+const RecordsResidentsRoute = RecordsResidentsRouteImport.update({
+  id: '/residents',
+  path: '/residents',
+  getParentRoute: () => RecordsRoute,
+} as any)
+const RecordsLgusRoute = RecordsLgusRouteImport.update({
+  id: '/lgus',
+  path: '/lgus',
+  getParentRoute: () => RecordsRoute,
+} as any)
+const RecordsHousesRoute = RecordsHousesRouteImport.update({
+  id: '/houses',
+  path: '/houses',
+  getParentRoute: () => RecordsRoute,
+} as any)
+const RecordsFamiliesRoute = RecordsFamiliesRouteImport.update({
+  id: '/families',
+  path: '/families',
+  getParentRoute: () => RecordsRoute,
+} as any)
+const RecordsEvacuationCentersRoute =
+  RecordsEvacuationCentersRouteImport.update({
+    id: '/evacuation-centers',
+    path: '/evacuation-centers',
+    getParentRoute: () => RecordsRoute,
+  } as any)
+const RecordsEvacuationCenterAssignmentsRoute =
+  RecordsEvacuationCenterAssignmentsRouteImport.update({
+    id: '/evacuation-center-assignments',
+    path: '/evacuation-center-assignments',
+    getParentRoute: () => RecordsRoute,
+  } as any)
+const RecordsContactPersonsRoute = RecordsContactPersonsRouteImport.update({
+  id: '/contact-persons',
+  path: '/contact-persons',
+  getParentRoute: () => RecordsRoute,
+} as any)
+const RecordsBarangaysRoute = RecordsBarangaysRouteImport.update({
+  id: '/barangays',
+  path: '/barangays',
+  getParentRoute: () => RecordsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/records': typeof RecordsRouteWithChildren
   '/reports': typeof ReportsRoute
+  '/resident': typeof ResidentRoute
+  '/records/barangays': typeof RecordsBarangaysRoute
+  '/records/contact-persons': typeof RecordsContactPersonsRoute
+  '/records/evacuation-center-assignments': typeof RecordsEvacuationCenterAssignmentsRoute
+  '/records/evacuation-centers': typeof RecordsEvacuationCentersRoute
+  '/records/families': typeof RecordsFamiliesRoute
+  '/records/houses': typeof RecordsHousesRoute
+  '/records/lgus': typeof RecordsLgusRoute
+  '/records/residents': typeof RecordsResidentsRoute
+  '/records/': typeof RecordsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/reports': typeof ReportsRoute
+  '/resident': typeof ResidentRoute
+  '/records/barangays': typeof RecordsBarangaysRoute
+  '/records/contact-persons': typeof RecordsContactPersonsRoute
+  '/records/evacuation-center-assignments': typeof RecordsEvacuationCenterAssignmentsRoute
+  '/records/evacuation-centers': typeof RecordsEvacuationCentersRoute
+  '/records/families': typeof RecordsFamiliesRoute
+  '/records/houses': typeof RecordsHousesRoute
+  '/records/lgus': typeof RecordsLgusRoute
+  '/records/residents': typeof RecordsResidentsRoute
+  '/records': typeof RecordsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/records': typeof RecordsRouteWithChildren
   '/reports': typeof ReportsRoute
+  '/resident': typeof ResidentRoute
+  '/records/barangays': typeof RecordsBarangaysRoute
+  '/records/contact-persons': typeof RecordsContactPersonsRoute
+  '/records/evacuation-center-assignments': typeof RecordsEvacuationCenterAssignmentsRoute
+  '/records/evacuation-centers': typeof RecordsEvacuationCentersRoute
+  '/records/families': typeof RecordsFamiliesRoute
+  '/records/houses': typeof RecordsHousesRoute
+  '/records/lgus': typeof RecordsLgusRoute
+  '/records/residents': typeof RecordsResidentsRoute
+  '/records/': typeof RecordsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/reports'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/records'
+    | '/reports'
+    | '/resident'
+    | '/records/barangays'
+    | '/records/contact-persons'
+    | '/records/evacuation-center-assignments'
+    | '/records/evacuation-centers'
+    | '/records/families'
+    | '/records/houses'
+    | '/records/lgus'
+    | '/records/residents'
+    | '/records/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/reports'
-  id: '__root__' | '/' | '/reports'
+  to:
+    | '/'
+    | '/admin'
+    | '/reports'
+    | '/resident'
+    | '/records/barangays'
+    | '/records/contact-persons'
+    | '/records/evacuation-center-assignments'
+    | '/records/evacuation-centers'
+    | '/records/families'
+    | '/records/houses'
+    | '/records/lgus'
+    | '/records/residents'
+    | '/records'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/records'
+    | '/reports'
+    | '/resident'
+    | '/records/barangays'
+    | '/records/contact-persons'
+    | '/records/evacuation-center-assignments'
+    | '/records/evacuation-centers'
+    | '/records/families'
+    | '/records/houses'
+    | '/records/lgus'
+    | '/records/residents'
+    | '/records/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  RecordsRoute: typeof RecordsRouteWithChildren
   ReportsRoute: typeof ReportsRoute
+  ResidentRoute: typeof ResidentRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/resident': {
+      id: '/resident'
+      path: '/resident'
+      fullPath: '/resident'
+      preLoaderRoute: typeof ResidentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reports': {
       id: '/reports'
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/records': {
+      id: '/records'
+      path: '/records'
+      fullPath: '/records'
+      preLoaderRoute: typeof RecordsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -65,12 +240,106 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/records/': {
+      id: '/records/'
+      path: '/'
+      fullPath: '/records/'
+      preLoaderRoute: typeof RecordsIndexRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/residents': {
+      id: '/records/residents'
+      path: '/residents'
+      fullPath: '/records/residents'
+      preLoaderRoute: typeof RecordsResidentsRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/lgus': {
+      id: '/records/lgus'
+      path: '/lgus'
+      fullPath: '/records/lgus'
+      preLoaderRoute: typeof RecordsLgusRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/houses': {
+      id: '/records/houses'
+      path: '/houses'
+      fullPath: '/records/houses'
+      preLoaderRoute: typeof RecordsHousesRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/families': {
+      id: '/records/families'
+      path: '/families'
+      fullPath: '/records/families'
+      preLoaderRoute: typeof RecordsFamiliesRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/evacuation-centers': {
+      id: '/records/evacuation-centers'
+      path: '/evacuation-centers'
+      fullPath: '/records/evacuation-centers'
+      preLoaderRoute: typeof RecordsEvacuationCentersRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/evacuation-center-assignments': {
+      id: '/records/evacuation-center-assignments'
+      path: '/evacuation-center-assignments'
+      fullPath: '/records/evacuation-center-assignments'
+      preLoaderRoute: typeof RecordsEvacuationCenterAssignmentsRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/contact-persons': {
+      id: '/records/contact-persons'
+      path: '/contact-persons'
+      fullPath: '/records/contact-persons'
+      preLoaderRoute: typeof RecordsContactPersonsRouteImport
+      parentRoute: typeof RecordsRoute
+    }
+    '/records/barangays': {
+      id: '/records/barangays'
+      path: '/barangays'
+      fullPath: '/records/barangays'
+      preLoaderRoute: typeof RecordsBarangaysRouteImport
+      parentRoute: typeof RecordsRoute
+    }
   }
 }
 
+interface RecordsRouteChildren {
+  RecordsBarangaysRoute: typeof RecordsBarangaysRoute
+  RecordsContactPersonsRoute: typeof RecordsContactPersonsRoute
+  RecordsEvacuationCenterAssignmentsRoute: typeof RecordsEvacuationCenterAssignmentsRoute
+  RecordsEvacuationCentersRoute: typeof RecordsEvacuationCentersRoute
+  RecordsFamiliesRoute: typeof RecordsFamiliesRoute
+  RecordsHousesRoute: typeof RecordsHousesRoute
+  RecordsLgusRoute: typeof RecordsLgusRoute
+  RecordsResidentsRoute: typeof RecordsResidentsRoute
+  RecordsIndexRoute: typeof RecordsIndexRoute
+}
+
+const RecordsRouteChildren: RecordsRouteChildren = {
+  RecordsBarangaysRoute: RecordsBarangaysRoute,
+  RecordsContactPersonsRoute: RecordsContactPersonsRoute,
+  RecordsEvacuationCenterAssignmentsRoute:
+    RecordsEvacuationCenterAssignmentsRoute,
+  RecordsEvacuationCentersRoute: RecordsEvacuationCentersRoute,
+  RecordsFamiliesRoute: RecordsFamiliesRoute,
+  RecordsHousesRoute: RecordsHousesRoute,
+  RecordsLgusRoute: RecordsLgusRoute,
+  RecordsResidentsRoute: RecordsResidentsRoute,
+  RecordsIndexRoute: RecordsIndexRoute,
+}
+
+const RecordsRouteWithChildren =
+  RecordsRoute._addFileChildren(RecordsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  RecordsRoute: RecordsRouteWithChildren,
   ReportsRoute: ReportsRoute,
+  ResidentRoute: ResidentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

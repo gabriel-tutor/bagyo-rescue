@@ -12,7 +12,7 @@ import {
   useRescueReports,
   useUpdateReportStatus,
 } from '../data/use-rescue-reports';
-import type { RescuePriority, RescueReport } from '../db/schema';
+import type { RescuePriority, RescueReport } from '@/lib/dexie';
 
 const priorities: RescuePriority[] = ['critical', 'high', 'medium', 'low'];
 

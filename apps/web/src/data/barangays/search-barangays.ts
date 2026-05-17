@@ -29,7 +29,9 @@ export async function searchBarangaysData({
     .order(sortBy, { ascending: orderBy === 'asc' });
 
   if (filters?.searchText) {
-    query = query.or(`name.ilike.%${filters.searchText}%,area_name.ilike.%${filters.searchText}%`);
+    query = query.or(
+      `name.ilike.%${filters.searchText}%,area_name.ilike.%${filters.searchText}%`
+    );
   }
 
   if (filters?.lguId) {

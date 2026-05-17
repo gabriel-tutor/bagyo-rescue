@@ -30,8 +30,11 @@ function RootLayout() {
           <Link to="/" activeProps={{ className: 'active' }}>
             Dashboard
           </Link>
-          <Link to="/reports" activeProps={{ className: 'active' }}>
-            Reports
+          <Link to="/resident" activeProps={{ className: 'active' }}>
+            Resident
+          </Link>
+          <Link to="/admin" activeProps={{ className: 'active' }}>
+            Admin
           </Link>
         </nav>
       </header>
