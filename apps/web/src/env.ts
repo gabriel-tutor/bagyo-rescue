@@ -1,22 +1,14 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  BASE_PATH: z.preprocess(
-    value => (typeof value === 'string' && value.trim() === '' ? undefined : value),
-    z
-      .string()
-      .trim()
-      .default('/')
-      .transform(basePath => {
-        const withLeadingSlash = basePath.startsWith('/') ? basePath : `/${basePath}`;
-        return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`;
-      })
-  ),
+  SUPABASE_URL: z.string().trim().url(),
+  SUPABASE_ANON_KEY: z.string().trim().min(1),
 });
 
 export const getEnvConfig = () =>
   envSchema.parse({
-    BASE_PATH: import.meta.env.VITE_BASE_PATH,
+    SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+    SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
   });
 
 export const envConfig = getEnvConfig();
