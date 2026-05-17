@@ -1,0 +1,8 @@
+{
+  "name": "@bagyo-rescue/supabase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen:types": "pnpm dlx supabase gen types typescript --linked --schema public > ../../apps/web/src/lib/supabase/types.ts"
+  }
+}
