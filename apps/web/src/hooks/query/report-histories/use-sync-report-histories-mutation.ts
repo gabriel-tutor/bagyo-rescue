@@ -1,13 +1,14 @@
 import { type MutationOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   syncReportHistoriesService,
+  type SyncReportHistoriesServiceArgs,
   type SyncReportHistoriesServiceResult,
 } from '@/services/report-histories';
 
 export type UseSyncReportHistoriesMutationArgs = MutationOptions<
   SyncReportHistoriesServiceResult,
   Error,
-  void
+  SyncReportHistoriesServiceArgs | void
 >;
 
 export function useSyncReportHistoriesMutation(args: UseSyncReportHistoriesMutationArgs = {}) {
@@ -15,7 +16,7 @@ export function useSyncReportHistoriesMutation(args: UseSyncReportHistoriesMutat
 
   return useMutation({
     ...args,
-    mutationFn: () => syncReportHistoriesService(),
+    mutationFn: payload => syncReportHistoriesService(payload ?? {}),
     onSettled: async (...settledArgs) => {
       await queryClient.invalidateQueries({ queryKey: ['/report-histories'] });
       args.onSettled?.(...settledArgs);

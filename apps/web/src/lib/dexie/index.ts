@@ -2,16 +2,22 @@ export { dexie, createDexieClient, type BagyoRescueDexie } from './client';
 export {
   addReportHistory,
   getReportHistory,
-  listReportHistories,
-  listReportHistoriesForSync,
-  updateReportHistorySyncState,
+  getReportHistoryWithOutboxState,
+  listReportHistoriesWithOutboxState,
+  listReportHistoryOutboxForSync,
+  updateReportHistoryOutboxState,
   type AddReportHistoryInput,
+  type ListReportHistoriesWithOutboxStateInput,
+  type ListReportHistoryOutboxForSyncInput,
 } from './report-histories';
 export { dexieSchema } from './schema';
 export type {
   ReportHistory,
-  ReportHistorySyncStatus,
+  ReportHistoryOutbox,
+  ReportHistoryOutboxAction,
+  ReportHistoryOutboxStatus,
   ReportHistoryType,
+  ReportHistoryWithOutboxState,
   ReportHistoryWaterLevel,
   ResidentAccessMethod,
 } from './types';

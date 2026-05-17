@@ -36,8 +36,8 @@ function HomePage() {
   const reports = reportHistoriesQuery.data ?? [];
   const summary = useMemo(
     () => ({
-      pending: reports.filter(report => report.syncStatus !== 'sent').length,
-      sent: reports.filter(report => report.syncStatus === 'sent').length,
+      pending: reports.filter(report => report.outbox_status !== 'sent').length,
+      sent: reports.filter(report => report.outbox_status === 'sent').length,
       total: reports.length,
     }),
     [reports]

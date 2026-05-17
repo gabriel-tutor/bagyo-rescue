@@ -1,9 +1,11 @@
+import { type PublicTableInsert } from '@/data';
 import { createReportHistoryData } from '@/data/report-histories';
 import {
   getReportHistory,
-  listReportHistoriesForSync,
-  updateReportHistorySyncState,
+  listReportHistoryOutboxForSync,
+  updateReportHistoryOutboxState,
   type ReportHistory,
+  type ReportHistoryOutbox,
 } from '@/lib/dexie';
 
 export type SyncReportHistoriesServiceDependencies = {
@@ -11,6 +13,7 @@ export type SyncReportHistoriesServiceDependencies = {
 };
 
 export type SyncReportHistoriesServiceArgs = {
+  family_code?: string;
   dependencies?: SyncReportHistoriesServiceDependencies;
 };
 
@@ -20,38 +23,45 @@ export type SyncReportHistoriesServiceResult = {
 };
 
 export async function syncReportHistoriesService({
+  family_code,
   dependencies = {
     createReportHistoryData,
   },
 }: SyncReportHistoriesServiceArgs = {}): Promise<SyncReportHistoriesServiceResult> {
-  const queuedReports = await listReportHistoriesForSync();
+  const queuedActions = await listReportHistoryOutboxForSync({ family_code });
   let sent = 0;
   let failed = 0;
 
-  for (const reportHistory of queuedReports) {
-    await updateReportHistorySyncState({
-      id: reportHistory.id,
-      syncStatus: 'sending',
-      lastSyncError: null,
+  for (const outbox of queuedActions) {
+    await updateReportHistoryOutboxState({
+      id: outbox.id,
+      status: 'sending',
+      last_error: null,
     });
 
     try {
+      const reportHistory = await getReportHistory(outbox.report_history_id);
+
+      if (!reportHistory) {
+        throw new Error('Report was not found on this device.');
+      }
+
       await dependencies.createReportHistoryData({
-        payload: toReportHistoryPayload(reportHistory),
+        payload: toReportHistoryPayload(reportHistory, outbox),
       });
-      await updateReportHistorySyncState({
-        id: reportHistory.id,
-        syncStatus: 'sent',
-        lastSyncError: null,
-        syncedAt: Date.now(),
+      await updateReportHistoryOutboxState({
+        id: outbox.id,
+        status: 'sent',
+        last_error: null,
+        synced_at: new Date().toISOString(),
       });
       sent += 1;
     } catch (error) {
-      await updateReportHistorySyncState({
-        id: reportHistory.id,
-        syncStatus: 'failed',
-        lastSyncError: error instanceof Error ? error.message : 'Hindi naipadala ang report.',
-        incrementRetryCount: true,
+      await updateReportHistoryOutboxState({
+        id: outbox.id,
+        status: 'failed',
+        last_error: error instanceof Error ? error.message : 'Hindi naipadala ang report.',
+        increment_attempt_count: true,
       });
       failed += 1;
     }
@@ -60,31 +70,23 @@ export async function syncReportHistoriesService({
   return { sent, failed };
 }
 
-export async function getLatestReportHistorySyncState(id: string) {
-  return getReportHistory(id);
-}
+function toReportHistoryPayload(
+  reportHistory: ReportHistory,
+  outbox: ReportHistoryOutbox
+): PublicTableInsert<'report_histories'> {
+  if (outbox.action !== 'insert_report_history') {
+    throw new Error(`Unsupported outbox action: ${outbox.action}`);
+  }
 
-function toReportHistoryPayload(reportHistory: ReportHistory) {
   return {
-    id: reportHistory.id,
-    type: reportHistory.type,
-    family_id: reportHistory.familyId,
-    house_id: reportHistory.houseId,
-    family_code: reportHistory.familyCode,
-    access_method: reportHistory.accessMethod,
-    phone_number: reportHistory.phoneNumber,
+    ...reportHistory,
     latitude: reportHistory.latitude === null ? null : roundCoordinate(reportHistory.latitude),
     longitude: reportHistory.longitude === null ? null : roundCoordinate(reportHistory.longitude),
     accuracy_meters:
-      reportHistory.accuracyMeters === null
+      reportHistory.accuracy_meters === null
         ? null
-        : Math.round(reportHistory.accuracyMeters * 100) / 100,
-    water_level: reportHistory.waterLevel,
-    people_count: reportHistory.peopleCount,
-    note: reportHistory.note.trim() || null,
-    source: 'web',
-    status: 'New' as const,
-    client_created_at: new Date(reportHistory.createdAt).toISOString(),
+        : Math.round(reportHistory.accuracy_meters * 100) / 100,
+    note: reportHistory.note?.trim() || null,
   };
 }
 

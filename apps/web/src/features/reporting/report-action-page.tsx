@@ -18,10 +18,10 @@ import {
 } from '@/hooks/query/report-histories';
 import { Constants } from '@/lib/supabase/types';
 import type {
-  ReportHistory,
-  ReportHistorySyncStatus,
+  ReportHistoryOutboxStatus,
   ReportHistoryType,
   ReportHistoryWaterLevel,
+  ReportHistoryWithOutboxState,
 } from '@/lib/dexie';
 import { Alert, AlertBody } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -79,7 +79,8 @@ function VerifiedReportForm({
   access: ResidentAccessSession & { endSession: () => void };
 }) {
   const isOnline = useOnlineStatus();
-  const reportHistoriesQuery = useReportHistoriesQuery(type);
+  const familyCode = access.session.family.family_code;
+  const reportHistoriesQuery = useReportHistoriesQuery({ family_code: familyCode, type });
   const submitReportHistory = useSubmitReportHistoryMutation();
   const syncReportHistories = useSyncReportHistoriesMutation();
   const [capturedLocation, setCapturedLocation] = useState<CapturedLocation | null>(null);
@@ -91,7 +92,7 @@ function VerifiedReportForm({
 
   const reportHistories = reportHistoriesQuery.data ?? [];
   const queuedCount = useMemo(
-    () => reportHistories.filter(report => report.syncStatus !== 'sent').length,
+    () => reportHistories.filter(report => report.outbox_status !== 'sent').length,
     [reportHistories]
   );
   const isFloodReport = type === 'Flood Report';
@@ -105,8 +106,8 @@ function VerifiedReportForm({
     if (hasAttemptedStartupSyncRef.current || syncReportHistories.isPending) return;
 
     hasAttemptedStartupSyncRef.current = true;
-    syncReportHistories.mutate();
-  }, [isOnline, syncReportHistories]);
+    syncReportHistories.mutate({ family_code: familyCode });
+  }, [familyCode, isOnline, syncReportHistories]);
 
   async function handleLocate() {
     setLocationError(null);
@@ -155,16 +156,16 @@ function VerifiedReportForm({
       {
         payload: {
           type,
-          familyId: access.session.family.id,
-          houseId: access.session.house.id,
-          familyCode: access.session.family.family_code,
-          accessMethod: access.accessMethod,
-          phoneNumber: phoneNumber || (access.session.family.head_of_family_phone_number ?? null),
+          family_id: access.session.family.id,
+          house_id: access.session.house.id,
+          family_code: access.session.family.family_code,
+          access_method: access.accessMethod,
+          phone_number: phoneNumber || (access.session.family.head_of_family_phone_number ?? null),
           latitude: capturedLocation?.latitude ?? null,
           longitude: capturedLocation?.longitude ?? null,
-          accuracyMeters: capturedLocation?.accuracyMeters ?? null,
-          waterLevel,
-          peopleCount,
+          accuracy_meters: capturedLocation?.accuracyMeters ?? null,
+          water_level: waterLevel,
+          people_count: peopleCount,
           note,
         },
       },
@@ -173,7 +174,7 @@ function VerifiedReportForm({
           formElement.reset();
           setCapturedLocation(null);
           setFeedback(
-            reportHistory.syncStatus === 'sent'
+            reportHistory.outbox_status === 'sent'
               ? 'Naipadala ang report.'
               : 'Naka-save sa device. Ipapadala kapag may signal.'
           );
@@ -199,9 +200,7 @@ function VerifiedReportForm({
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-surface-sunken p-4">
             <div className="flex flex-col">
               <span className="text-caption text-muted-foreground">Verified family</span>
-              <span className="text-body-md font-medium text-foreground">
-                {access.session.family.family_code}
-              </span>
+              <span className="text-body-md font-medium text-foreground">{familyCode}</span>
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={access.endSession}>
               End session
@@ -321,7 +320,7 @@ function VerifiedReportForm({
               variant="ghost"
               isLoading={syncReportHistories.isPending}
               loadingLabel="Syncing..."
-              onClick={() => syncReportHistories.mutate()}
+              onClick={() => syncReportHistories.mutate({ family_code: familyCode })}
             >
               <IconRefresh aria-hidden="true" />
               Retry sync
@@ -376,16 +375,17 @@ function LocationPreview({ location }: { location: CapturedLocation }) {
   );
 }
 
-function ReportHistoryItem({ reportHistory }: { reportHistory: ReportHistory }) {
+function ReportHistoryItem({ reportHistory }: { reportHistory: ReportHistoryWithOutboxState }) {
   return (
     <li className="rounded-md border border-border bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-1.5">
           <span className="text-body-md font-medium text-foreground">
-            {reportHistory.familyCode}
+            {reportHistory.family_code}
           </span>
           <span className="text-label-md text-muted-foreground">
-            {reportHistory.peopleCount ?? 0} people · {formatTimeSince(reportHistory.createdAt)} ago
+            {reportHistory.people_count ?? 0} people · {formatTimeSince(reportHistory.created_at)}{' '}
+            ago
           </span>
           {reportHistory.latitude !== null && reportHistory.longitude !== null ? (
             <a
@@ -404,38 +404,38 @@ function ReportHistoryItem({ reportHistory }: { reportHistory: ReportHistory }) 
               </span>
             </a>
           ) : null}
-          {reportHistory.lastSyncError ? (
-            <span className="text-caption text-danger">{reportHistory.lastSyncError}</span>
+          {reportHistory.outbox_last_error ? (
+            <span className="text-caption text-danger">{reportHistory.outbox_last_error}</span>
           ) : null}
         </div>
-        <ReportSyncStatusBadge status={reportHistory.syncStatus} />
+        <ReportSyncStatusBadge status={reportHistory.outbox_status} />
       </div>
     </li>
   );
 }
 
-const syncDotClassName: Record<ReportHistorySyncStatus, string> = {
+const syncDotClassName: Record<ReportHistoryOutboxStatus, string> = {
   queued: 'bg-signal',
   sending: 'bg-primary',
   sent: 'bg-safe',
   failed: 'bg-danger',
 };
 
-const syncLabel: Record<ReportHistorySyncStatus, string> = {
+const syncLabel: Record<ReportHistoryOutboxStatus, string> = {
   queued: 'Queued',
   sending: 'Sending',
   sent: 'Sent',
   failed: 'Retrying',
 };
 
-const syncIcon: Record<ReportHistorySyncStatus, typeof IconCheck> = {
+const syncIcon: Record<ReportHistoryOutboxStatus, typeof IconCheck> = {
   queued: IconAlertTriangle,
   sending: IconRefresh,
   sent: IconCheck,
   failed: IconAlertTriangle,
 };
 
-function ReportSyncStatusBadge({ status }: { status: ReportHistorySyncStatus }) {
+function ReportSyncStatusBadge({ status }: { status: ReportHistoryOutboxStatus }) {
   const Icon = syncIcon[status];
 
   return (
@@ -513,8 +513,8 @@ function buildMapsUrl(location: Pick<CapturedLocation, 'latitude' | 'longitude'>
   return `https://www.google.com/maps?q=${location.latitude},${location.longitude}`;
 }
 
-function formatTimeSince(timestamp: number) {
-  const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+function formatTimeSince(timestamp: string) {
+  const seconds = Math.max(0, Math.floor((Date.now() - Date.parse(timestamp)) / 1000));
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m`;

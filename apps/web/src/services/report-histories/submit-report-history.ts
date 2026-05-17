@@ -1,4 +1,8 @@
-import { addReportHistory, getReportHistory, type AddReportHistoryInput } from '@/lib/dexie';
+import {
+  addReportHistory,
+  getReportHistoryWithOutboxState,
+  type AddReportHistoryInput,
+} from '@/lib/dexie';
 import { syncReportHistoriesService } from './sync-report-histories';
 
 export type SubmitReportHistoryServiceArgs = {
@@ -9,10 +13,10 @@ export async function submitReportHistoryService({ payload }: SubmitReportHistor
   const reportHistory = await addReportHistory(payload);
 
   if (typeof navigator === 'undefined' || navigator.onLine) {
-    await syncReportHistoriesService();
+    await syncReportHistoriesService({ family_code: payload.family_code ?? undefined });
   }
 
-  return (await getReportHistory(reportHistory.id)) ?? reportHistory;
+  return (await getReportHistoryWithOutboxState(reportHistory.id)) ?? reportHistory;
 }
 
 export type SubmitReportHistoryServiceResponse = Awaited<
